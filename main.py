@@ -34,9 +34,9 @@ region_screenshot = screenshot_cv[top:bottom, left:right]
 region_screenshot_pil = Image.fromarray(
     cv2.cvtColor(region_screenshot, cv2.COLOR_BGR2RGB))
 region_screenshot_pil.save("screenshot.png")
-ele.send_keys('41147008s')
+ele.send_keys('')
 sleep(1)
-ele2.send_keys('ser789777')
+ele2.send_keys('')
 sleep(1)
 
 with open('screenshot.png', 'rb') as f:
