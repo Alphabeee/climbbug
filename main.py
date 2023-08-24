@@ -4,7 +4,7 @@ from PIL import Image
 from selenium.webdriver.common.by import By
 from io import BytesIO
 import numpy as np
-import cv2
+import time
 import ddddocr
 from time import sleep
 import tkinter
@@ -44,10 +44,14 @@ def login_sucessfully():
     text = text.replace('0', 'o')
     white_list = 'abcdefghijklmnopqrstuvwxyz123456789+-'
     text = replace_chars_except_whitelist(text, white_list)
+    if len(text) == 3 and text[0].isdigit() and text[2].isdigit():
+        if text[1] == 'x':
+            text[1] = '*'
+        text = eval(text)
 
     print(text)
     ele3.send_keys(text)
-    sleep(5)
+    sleep(2)
     login_button.click()
     sleep(5)
     now_url = driver.current_url
@@ -57,15 +61,29 @@ def login_sucessfully():
 
 
 def do_it():
+    driver.get(url)
     while True:
         if login_sucessfully() == True:
             break
         driver.refresh()
         sleep(10)
+
     driver.find_element(
         By.XPATH, '/html/body/center/table[1]/tbody/tr/td[1]/div/div/div[3]/div/div/div').click()
     sleep(2)
+    start_time = time.time()
     Course_selection()
+    while (1):
+        end_time = time.time()
+        if end_time-start_time >= 50:
+            logout()
+        sleep(1)
+
+
+def logout():
+    driver.switch_to.default_content()
+    logout_button = driver.find_element(By.ID, 'button-1017-btnEl')
+    logout_button.click()
 
 
 def END():
@@ -84,12 +102,8 @@ def Course_selection():
     driver.switch_to.frame(iframe)
     search_column = driver.find_element(By.ID, 'serialNo-inputEl')
     search_button = driver.find_element(By.ID, 'button-1060-btnEl')
-    search_column.send_keys('1009')
+    search_column.send_keys(Course_number.get())
     search_button.click()
-
-
-def logout():
-    driver.find_element(By.ID, 'button-1017')
 
 
 options = Options()
@@ -97,7 +111,6 @@ url = 'https://cos1s.ntnu.edu.tw/AasEnrollStudent/LoginCheckCtrl?language=TW'
 options.path = "C:\\climbbug\\msedgedriver.exe"
 ocr = ddddocr.DdddOcr()
 driver = webdriver.Edge(options=options)
-driver.get(url)
 driver.maximize_window()
 # GUI_DESIGN
 window = tkinter.Tk()
